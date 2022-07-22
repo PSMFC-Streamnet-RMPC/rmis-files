@@ -2,6 +2,10 @@
 //still need to handle no-files message
 //log out issue
 
+const apiUrl = 'phish.rmis.org'
+//for dev
+//const apiUrl = 'localhost:5001'
+
 function parseJwt (token) {
   var base64Url = token.split('.')[1]
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
@@ -21,7 +25,7 @@ function clearForms() {
 }
 
 function isValidToken(jwt){	
- fetch('http://localhost:5001/files', {
+ fetch('http://' + apiUrl + '/files', {
     method: 'GET',
     mode: 'cors', 
     headers: {
@@ -82,7 +86,7 @@ function loggedIn(res){
   let ak = parseJwt(localStorage.getItem("RMIS")).apikey
 
   uppy.use(XHRUpload, {
-    endpoint: 'http://localhost:5001/files?xapikey=' + ak,
+    endpoint: 'http://' + apiUrl + '/files?xapikey=' + ak,
     formData: true,
     fieldName: 'upfile',
   })
@@ -111,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function(){
     formData.append("jwt", "true");
     formData = new URLSearchParams(formData)    
 
-    fetch('http://localhost:5001/bauth', {
+    fetch('http://' + apiUrl + '/bauth', {
       method: 'POST',
       mode: 'cors', 
       body: formData,    
