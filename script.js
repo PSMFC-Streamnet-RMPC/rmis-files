@@ -3,7 +3,7 @@
 
 //const apiUrl = 'phish.rmis.org'
 //for dev
-const apiUrl = "localhost:5001"
+const apiUrl = "http://localhost:5001"
 
 function parseJwt(token) {
   var base64Url = token.split(".")[1]
@@ -29,7 +29,7 @@ function clearForms() {
 }
 
 function isValidToken(jwt) {
-  fetch("http://" + apiUrl + "/files", {
+  fetch(apiUrl + "/files", {
     method: "GET",
     mode: "cors",
     headers: {
@@ -107,7 +107,7 @@ function loggedIn(res) {
   let ak = parseJwt(localStorage.getItem("RMIS")).apikey
 
   uppy.use(XHRUpload, {
-    endpoint: "http://" + apiUrl + "/files?xapikey=" + ak,
+    endpoint: apiUrl + "/files?xapikey=" + ak,
     formData: true,
     fieldName: "upfile",
   })
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("jwt", "true")
     formData = new URLSearchParams(formData)
 
-    fetch("http://" + apiUrl + "/bauth", {
+    fetch(apiUrl + "/bauth", {
       method: "POST",
       mode: "cors",
       body: formData,
