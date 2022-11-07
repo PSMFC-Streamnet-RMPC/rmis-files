@@ -1,7 +1,7 @@
 //still need to handle no-files message
 //log out issue
 
-//const apiUrl = 'phish.rmis.org'
+//const apiUrl = 'https://phish.rmis.org'
 //for dev
 const apiUrl = "localhost:5001"
 
@@ -34,6 +34,9 @@ function isValidToken(jwt) {
     mode: "cors",
     headers: {
       Authorization: "Bearer " + jwt,
+      
+      xapikey: apikey
+      
       "User-Agent": "RMIS-App",
       Accept: "*/*",
     },
@@ -54,7 +57,7 @@ function makeFiles(files) {
       "</td><td>" +
       cur.size +
       "</td><td>" +
-      cur.created +
+      cur.accessed +
       "</td></tr>",
     ""
   )
