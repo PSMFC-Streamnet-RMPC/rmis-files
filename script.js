@@ -114,7 +114,7 @@ function loggedIn(res) {
     restrictions: { maxFileSize: 250000000 },
   })
   const { FileInput } = Uppy
-  const { ProgressBar } = Uppy
+  //const { ProgressBar } = Uppy
   const { StatusBar } = Uppy
   const { XHRUpload } = Uppy
 
