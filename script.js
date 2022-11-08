@@ -20,7 +20,7 @@ function parseJwt(token) {
 }
 
 function showForm(form) {
-  clearForms()
+  //clearForms()
   document.querySelector("#" + form).style.display = "inherit"
 }
 
@@ -28,27 +28,35 @@ function clearForms() {
   document.querySelectorAll(".fxn").forEach((el) => (el.style.display = "none"))
 }
 
-function isValidToken(jwt) {
-  fetch(apiUrl + "/files", {
-    method: "GET",
-    mode: "cors",
+function isValidToken(jwt) {  
+  jQuery.ajax({
+    method: 'GET',
+    url: apiUrl + '/files',
     headers: {
       Authorization: "Bearer " + jwt,
-      
-      xapikey: apikey
-      
-      "User-Agent": "RMIS-App",
       Accept: "*/*",
     },
+
+    success: function (response) {
+      loggedIn(response)      
+    },
+    error: function (response) {
+      localStorage.removeItem("RMIS")
+      showForm('userLogin')
+
+      if (response.responseJSON.statusCode == 401) {
+        showMessage("Access issue. Contact RMIS.")
+      } else {
+        showMessage(response.responseJSON.message)
+      }
+      
+    },
   })
-    .then((response) => response.json())
-    .then((data) => {
-      loggedIn(data)
-    })
-    .catch((error) => showForm("userLogin"))
+
 }
 
 function makeFiles(files) {
+  clearForms()
   const items = files.reduce(
     (acc, cur) =>
       acc +
@@ -62,15 +70,22 @@ function makeFiles(files) {
     ""
   )
   const html =
+    '<div style="margin-bottom:10px;">Use the "Choose files" button to select 4.1 format .csv or .txt files from your computer to upload. </div>' + 
     '<table class="table"><thead class="thead-light"><tr><th>File Name</th><th>Size</th><th>Date</th></tr></thead><tbody>' +
     items +
     "</tbody></table>"
+  showForm('userUpload')
   document.querySelector("#datafiles").innerHTML = html
 }
 
-function showMessage(msg) {
-  document.querySelector("#statusMsg").innerHTML = msg
-  document.querySelector("#statusInfo").style.display = "inherit"
+function showMessage(msg, smalltxt) {
+  showForm("statusInfo")
+  if (smalltxt) {
+    msg = '<h4 class="alert-heading">' + msg + '</h4>' + '<hr><p>' + smalltxt + '</p>'
+  } else {
+    msg = '<h4 class="alert-heading">' + msg + '</h4>'
+  }
+  document.querySelector("#statusInfo").innerHTML = msg
 }
 
 function logOut() {
@@ -80,10 +95,17 @@ function logOut() {
 }
 
 function loggedIn(res) {
+  clearForms()
   let id = parseJwt(localStorage.getItem("RMIS"))
   showForm("userLoggedIn")
   document.querySelector("#navbarDropdown").innerHTML = id.email
-  makeFiles(res)
+    
+  if (res.length) {
+    makeFiles(res)
+  } else {
+    showMessage('No files uploaded', 'Use the "Choose files" button to select 4.1 format .csv or .txt files from your computer to upload.')
+  }
+  
   document.querySelector(".Uppy").innerHTML = ""
 
   var uppy = new Uppy.Core({
@@ -130,30 +152,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.querySelector("form").addEventListener("submit", function (e) {
     e.preventDefault()
-    let formType = this.id
-    let form = document.querySelector("#" + this.id)
-    let formData = new FormData(form)
-    formData.append("jwt", "true")
-    formData = new URLSearchParams(formData)
+    let formType = jQuery(this).data('form')
+    let formData = jQuery('#' + $(this).data('form')).serialize()
+    formData = formData.concat("&jwt=true")
 
-    fetch(apiUrl + "/bauth", {
-      method: "POST",
-      mode: "cors",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (formType == "loginForm") {
-          localStorage.setItem("RMIS", data.token)
-          isValidToken(data.token)
-          return
-        }
+    jQuery.ajax({
+    method: 'POST',
+    url: apiUrl + '/bauth',
+    data: formData,
+    success: function (response) {
+      if (formType=='loginForm'){
+        localStorage.setItem("RMIS", response.token)
         clearForms()
-        showForm("userLogin")
-      })
-      .catch((error) => {
-        clearForms()
-        showForm("userLogin")
-      })
+        isValidToken(response.token)
+        return
+      }
+      
+      //clearForms()
+      //showForm('userLogin')
+      //showMessage(response)
+    },
+    error: function (response) {
+      clearForms()
+      showForm('userLogin')
+      
+      if (response.responseJSON.statusCode == 404) {
+        showMessage("Email or password not found")
+      } else {
+        showMessage(response.responseJSON.message)
+      }
+    }
   })
+
+
+  })
+
+
 })
