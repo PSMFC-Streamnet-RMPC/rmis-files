@@ -11,7 +11,3 @@ This project uses primarily vanilla javascript and Bootstrap to create a sample 
 [**Uppy JS**](https://uppy.io/): Uppy is a JavaScript file uploader that allows for easy file uploads from various sources, such as local files, remote URLs, and cloud services like Google Drive and Dropbox. (Version 3.3)
 
 [**JQuery**](https://jquery.com/): A JS library that makes things like HTML document traversal and manipulation, event handling, animation, and Ajax much simpler (Version 3.4.1)
-
-## Production Website
-
-[**https://capmap.streamnet.org**](https://capmap.streamnet.org)
