@@ -1,4 +1,4 @@
-# CAP-MAP
+# RMIS Files
 
 This project uses primarily vanilla javascript and Bootstrap to create a sample file upload form and list of user files. The app only interacts with the [**RMIS API**](https://github.com/PSMFC-Streamnet-RMPC/rmis-api). Uppy JS is used for multiple file upload functionality, and JQuery ajax is used for API calls instead of JS fetch to simplify the code.
 
