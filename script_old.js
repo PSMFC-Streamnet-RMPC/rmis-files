@@ -1,9 +1,9 @@
 //still need to handle no-files message
 //log out issue
 
-const apiUrl = 'https://phish.rmis.org'
+//const apiUrl = 'https://phish.rmis.org'
 //for dev
-//const apiUrl = "http://localhost:5001"
+const apiUrl = "http://localhost:5001"
 
 function parseJwt(token) {
   var base64Url = token.split(".")[1]
@@ -24,12 +24,6 @@ function showForm(form) {
   document.querySelector("#" + form).style.display = "inherit"
 }
 
-function hideMessage() {
-  setTimeout(function() {
-    document.querySelector("#statusInfo").style.display = "none"
-  }, 3000);
-}
-
 function clearForms() {
   document.querySelectorAll(".fxn").forEach((el) => (el.style.display = "none"))
 }
@@ -44,12 +38,7 @@ function isValidToken(jwt) {
     },
 
     success: function (response) {
-      const files = response.filter(f => {
-        if(f.filename!=".sys") {
-          return f
-        }
-      })
-      loggedIn(files)           
+      loggedIn(response)      
     },
     error: function (response) {
       localStorage.removeItem("RMIS")
@@ -76,7 +65,7 @@ function makeFiles(files) {
       "</td><td>" +
       cur.size +
       "</td><td>" +
-      cur.modified +
+      cur.accessed +
       "</td></tr>",
     ""
   )
@@ -98,9 +87,6 @@ function showMessage(msg, smalltxt) {
   }
   document.querySelector("#statusInfo").innerHTML = msg
 }
-
-
-
 
 function logOut() {
   localStorage.removeItem("RMIS")
@@ -153,14 +139,7 @@ function loggedIn(res) {
 
   // And display uploaded list of files
   uppy.on("upload-success", (file, response) => {
-  //$('.toast').toast('show');  
-  //document.querySelector(".toast").toast('show')
-  
-  makeFiles(response.body)
-  showMessage('Files uploaded successfully')
-  hideMessage()
-  
- 
+    makeFiles(response.body)
   })
 }
 
@@ -170,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     isValidToken(localStorage.getItem("RMIS"))
   }
-
 
   document.querySelector("form").addEventListener("submit", function (e) {
     e.preventDefault()
