@@ -28,31 +28,29 @@ function clearForms() {
   document.querySelectorAll(".fxn").forEach((el) => (el.style.display = "none"))
 }
 
-function isValidToken(jwt) {  
+function isValidToken(jwt) {
   jQuery.ajax({
-    method: 'GET',
-    url: apiUrl + '/files',
+    method: "GET",
+    url: apiUrl + "/files",
     headers: {
       Authorization: "Bearer " + jwt,
       Accept: "*/*",
     },
 
     success: function (response) {
-      loggedIn(response)      
+      loggedIn(response)
     },
     error: function (response) {
       localStorage.removeItem("RMIS")
-      showForm('userLogin')
+      showForm("userLogin")
 
       if (response.responseJSON.statusCode == 401) {
         showMessage("Access issue. Contact RMIS.")
       } else {
         showMessage(response.responseJSON.message)
       }
-      
     },
   })
-
 }
 
 function makeFiles(files) {
@@ -70,20 +68,26 @@ function makeFiles(files) {
     ""
   )
   const html =
-    '<div style="margin-bottom:10px;">Use the "Choose files" button to select 4.1 format .csv or .txt files from your computer to upload. </div>' + 
+    '<div style="margin-bottom:10px;">Use the "Choose files" button to select PSC format .csv or .txt files from your computer to upload. </div>' +
     '<table class="table"><thead class="thead-light"><tr><th>File Name</th><th>Size</th><th>Date</th></tr></thead><tbody>' +
     items +
     "</tbody></table>"
-  showForm('userUpload')
+  showForm("userUpload")
   document.querySelector("#datafiles").innerHTML = html
 }
 
 function showMessage(msg, smalltxt) {
   showForm("statusInfo")
   if (smalltxt) {
-    msg = '<h4 class="alert-heading">' + msg + '</h4>' + '<hr><p>' + smalltxt + '</p>'
+    msg =
+      '<h4 class="alert-heading">' +
+      msg +
+      "</h4>" +
+      "<hr><p>" +
+      smalltxt +
+      "</p>"
   } else {
-    msg = '<h4 class="alert-heading">' + msg + '</h4>'
+    msg = '<h4 class="alert-heading">' + msg + "</h4>"
   }
   document.querySelector("#statusInfo").innerHTML = msg
 }
@@ -99,13 +103,16 @@ function loggedIn(res) {
   let id = parseJwt(localStorage.getItem("RMIS"))
   showForm("userLoggedIn")
   document.querySelector("#navbarDropdown").innerHTML = id.email
-    
+
   if (res.length) {
     makeFiles(res)
   } else {
-    showMessage('No files uploaded', 'Use the "Choose files" button to select 4.1 format .csv or .txt files from your computer to upload.')
+    showMessage(
+      "No files uploaded",
+      'Use the "Choose files" button to select PSC format .csv or .txt files from your computer to upload.'
+    )
   }
-  
+
   document.querySelector(".Uppy").innerHTML = ""
 
   var uppy = new Uppy.Core({
@@ -152,40 +159,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.querySelector("form").addEventListener("submit", function (e) {
     e.preventDefault()
-    let formType = jQuery(this).data('form')
-    let formData = jQuery('#' + $(this).data('form')).serialize()
+    let formType = jQuery(this).data("form")
+    let formData = jQuery("#" + $(this).data("form")).serialize()
     formData = formData.concat("&jwt=true")
 
     jQuery.ajax({
-    method: 'POST',
-    url: apiUrl + '/bauth',
-    data: formData,
-    success: function (response) {
-      if (formType=='loginForm'){
-        localStorage.setItem("RMIS", response.token)
+      method: "POST",
+      url: apiUrl + "/bauth",
+      data: formData,
+      success: function (response) {
+        if (formType == "loginForm") {
+          localStorage.setItem("RMIS", response.token)
+          clearForms()
+          isValidToken(response.token)
+          return
+        }
+
+        //clearForms()
+        //showForm('userLogin')
+        //showMessage(response)
+      },
+      error: function (response) {
         clearForms()
-        isValidToken(response.token)
-        return
-      }
-      
-      //clearForms()
-      //showForm('userLogin')
-      //showMessage(response)
-    },
-    error: function (response) {
-      clearForms()
-      showForm('userLogin')
-      
-      if (response.responseJSON.statusCode == 404) {
-        showMessage("Email or password not found")
-      } else {
-        showMessage(response.responseJSON.message)
-      }
-    }
+        showForm("userLogin")
+
+        if (response.responseJSON.statusCode == 404) {
+          showMessage("Email or password not found")
+        } else {
+          showMessage(response.responseJSON.message)
+        }
+      },
+    })
   })
-
-
-  })
-
-
 })
