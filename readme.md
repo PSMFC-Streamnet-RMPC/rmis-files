@@ -1,10 +1,8 @@
 # RMIS Files
 
-This project uses primarily vanilla javascript and Bootstrap to create a sample file upload form and list of user files. The app only interacts with the [**RMIS API**](https://github.com/PSMFC-Streamnet-RMPC/rmis-api). Uppy JS is used for multiple file upload functionality, and JQuery ajax is used for API calls instead of JS fetch to simplify the code.
+This project uses primarily vanilla javascript and Bootstrap to create a user login and list of logged-in user data files with file upload functionality. This is an example of interacting with the [**RMIS API**](https://github.com/PSMFC-Streamnet-RMPC/rmis-api). Uppy JS is used for multiple file upload functionality, and JQuery ajax is used for API calls instead of JS fetch to simplify the API interaction.
 
 ## Requirements
-
-[**JQuery**](https://jquery.com/): A JavaScript library for simplifying HTML document traversing, event handling, and animation (Version 1.12.3)
 
 [**Bootstrap**](https://getbootstrap.com/): A CSS framework for creating responsive and mobile-friendly websites (Version 4.1)
 
