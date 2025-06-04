@@ -1,4 +1,9 @@
+//still need to handle no-files message
+//log out issue
+
 const apiUrl = "https://phish.rmis.org"
+//for dev
+//const apiUrl = "http://localhost:5001"
 
 function parseJwt(token) {
   var base64Url = token.split(".")[1]
@@ -14,17 +19,8 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload)
 }
 
-function isTokenExpired(token) {
-  try {
-    const payload = parseJwt(token)
-    const now = Math.floor(Date.now() / 1000)
-    return payload.exp < now
-  } catch (e) {
-    return true
-  }
-}
-
 function showForm(form) {
+  //clearForms()
   document.querySelector("#" + form).style.display = "inherit"
 }
 
@@ -46,13 +42,24 @@ function isValidToken(jwt) {
       Authorization: "Bearer " + jwt,
       Accept: "*/*",
     },
+
     success: function (response) {
-      const files = response.filter((f) => f.filename !== ".sys")
+      const files = response.filter((f) => {
+        if (f.filename != ".sys") {
+          return f
+        }
+      })
       loggedIn(files)
     },
-    error: function () {
+    error: function (response) {
       localStorage.removeItem("RMIS")
       showForm("userLogin")
+
+      if (response.responseJSON.statusCode == 401) {
+        showMessage("Access issue. Contact RMIS.")
+      } else {
+        showMessage(response.responseJSON.message)
+      }
     },
   })
 }
@@ -124,8 +131,8 @@ function loggedIn(res) {
     autoProceed: true,
     restrictions: { maxFileSize: 250000000 },
   })
-
   const { FileInput } = Uppy
+  //const { ProgressBar } = Uppy
   const { StatusBar } = Uppy
   const { XHRUpload } = Uppy
 
@@ -148,7 +155,11 @@ function loggedIn(res) {
     fieldName: "upfile",
   })
 
+  // And display uploaded list of files
   uppy.on("upload-success", (file, response) => {
+    //$('.toast').toast('show');
+    //document.querySelector(".toast").toast('show')
+
     makeFiles(response.body)
     showMessage("Files uploaded successfully")
     hideMessage()
@@ -156,12 +167,10 @@ function loggedIn(res) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const token = localStorage.getItem("RMIS")
-  if (!token || isTokenExpired(token)) {
-    localStorage.removeItem("RMIS")
+  if (!localStorage.getItem("RMIS")) {
     showForm("userLogin")
   } else {
-    isValidToken(token)
+    isValidToken(localStorage.getItem("RMIS"))
   }
 
   document.querySelector("form").addEventListener("submit", function (e) {
@@ -181,6 +190,10 @@ document.addEventListener("DOMContentLoaded", function () {
           isValidToken(response.token)
           return
         }
+
+        //clearForms()
+        //showForm('userLogin')
+        //showMessage(response)
       },
       error: function (response) {
         clearForms()
