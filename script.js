@@ -185,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       },
       error: function (response) {
+        console.log("error")
         clearForms()
         showForm("userLogin")
 
