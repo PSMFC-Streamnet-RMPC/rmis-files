@@ -175,6 +175,8 @@ document.addEventListener("DOMContentLoaded", function () {
       url: apiUrl + "/bauth",
       data: formData,
       success: function (response) {
+        console.log("success")
+
         if (formType == "loginForm") {
           localStorage.setItem("RMIS", response.token)
           clearForms()
@@ -186,14 +188,16 @@ document.addEventListener("DOMContentLoaded", function () {
         clearForms()
         showForm("userLogin")
 
-        if (
-          response.responseJSON.statusCode == 404 ||
-          response.responseJSON.statusCode == 401
-        ) {
-          showMessage("Email or password not found")
-        } else {
-          showMessage(response.responseJSON.message)
-        }
+        showMessage("Email or password not found")
+
+        // if (
+        //   response.responseJSON.statusCode == 404 ||
+        //   response.responseJSON.statusCode == 401
+        // ) {
+        //   showMessage("Email or password not found")
+        // } else {
+        //   showMessage(response.responseJSON.message)
+        // }
       },
     })
   })
