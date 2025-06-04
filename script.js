@@ -189,6 +189,8 @@ document.addEventListener("DOMContentLoaded", function () {
         clearForms()
         showForm("userLogin")
 
+        console.log(response)
+
         let statusCode = response?.responseJSON?.statusCode
         let message =
           response?.responseJSON?.message ||
