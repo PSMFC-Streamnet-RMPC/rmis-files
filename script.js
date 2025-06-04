@@ -189,9 +189,11 @@ document.addEventListener("DOMContentLoaded", function () {
         clearForms()
         showForm("userLogin")
 
-        const statusCode = response?.responseJSON?.statusCode
-        const message =
-          response?.responseJSON?.message || "Login failed. Please try again."
+        let statusCode = response?.responseJSON?.statusCode
+        let message =
+          response?.responseJSON?.message ||
+          response?.responseJSON?.error || // <== handles your case
+          "Login failed. Please try again."
 
         if (statusCode === 404) {
           showMessage("Email or password not found")
